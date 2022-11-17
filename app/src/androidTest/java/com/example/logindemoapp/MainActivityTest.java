@@ -6,7 +6,9 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.logindemoapp.util.TestConstant.INVALID_EMAIL_ID;
@@ -14,11 +16,13 @@ import static com.example.logindemoapp.util.TestConstant.INVALID_PASSWORD;
 import static com.example.logindemoapp.util.TestConstant.SIGN_IN;
 import static com.example.logindemoapp.util.TestConstant.VALID_EMAIL_ID;
 import static com.example.logindemoapp.util.TestConstant.VALID_PASSWORD;
+import static org.hamcrest.Matchers.not;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.logindemoapp.ui.MainActivity;
+import com.example.logindemoapp.util.TestConstant;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,9 +57,10 @@ public class MainActivityTest {
     }
 
     @Test
-    public void assert_login_button_displayed_on_launcher_screen() {
+    public void assert_login_button_displayed_as_disabled_on_launcher_screen() {
         onView(withId(R.id.login_btn)).check(matches(isDisplayed()));
         onView(withId(R.id.login_btn)).check(matches(withText(R.string.login)));
+        onView(withId(R.id.login_btn)).check(matches(not(isEnabled())));
     }
 
     @Test
@@ -77,52 +82,43 @@ public class MainActivityTest {
     }
 
     @Test
-    public void assert_show_snack_bar_empty_fields_message_when_login_button_pressed_with_empty_field() {
-        onView(withId(R.id.login_btn)).perform(click());
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText(R.string.empty_credentials_message)));
+    public void assert_login_button_enabled_when_valid_email_is_entered() {
+        onView(withId(R.id.et_email))
+                .perform(typeText(VALID_EMAIL_ID), closeSoftKeyboard());
+        onView(withId(R.id.login_btn)).check(matches(isEnabled()));
     }
 
     @Test
-    public void assert_show_snack_bar_invalid_email_or_password_message_when_login_button_pressed_with_non_empty_email_field() {
+    public void assert_login_button_disabled_when_invalid_email_is_entered() {
+        onView(withId(R.id.et_email))
+                .perform(typeText(INVALID_EMAIL_ID), closeSoftKeyboard());
+        onView(withId(R.id.login_btn)).check(matches(not(isEnabled())));
+    }
+
+    @Test
+    public void assert_error_message_displayed_when_invalid_email_entered() {
+        onView(withId(R.id.et_email)).perform(typeText(INVALID_EMAIL_ID));
+        onView(withId(R.id.et_email)).check(matches(hasErrorText(TestConstant.ENTER_VALID_EMAIL_MESSAGE)));
+    }
+
+    @Test
+    public void assert_show_snack_bar_invalid_password_message_when_login_button_pressed_with_non_empty_password_field() {
+        onView(withId(R.id.et_email))
+                .perform(typeText(VALID_EMAIL_ID), closeSoftKeyboard());
+        onView(withId(R.id.et_password))
+                .perform(typeText(INVALID_PASSWORD), closeSoftKeyboard());
+        onView(withId(R.id.login_btn)).perform(click());
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+                .check(matches(withText(R.string.invalid_password_message)));
+    }
+
+    @Test
+    public void assert_show_snack_bar_enter_password_message_when_login_button_pressed_with_empty_password_field() {
         onView(withId(R.id.et_email))
                 .perform(typeText(VALID_EMAIL_ID), closeSoftKeyboard());
         onView(withId(R.id.login_btn)).perform(click());
         onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText(R.string.invalid_email_password_message)));
-    }
-
-    @Test
-    public void assert_show_snack_bar_invalid_email_or_password_message_when_login_button_pressed_with_non_empty_password_field() {
-        onView(withId(R.id.et_password))
-                .perform(typeText(VALID_PASSWORD), closeSoftKeyboard());
-        onView(withId(R.id.login_btn)).perform(click());
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText(R.string.invalid_email_password_message)));
-    }
-
-    @Test
-    public void assert_show_snack_bar_invalid_email_or_password_message_when_login_pressed_with_invalid_email_valid_password() {
-        onView(withId(R.id.et_email))
-                .perform(typeText(INVALID_EMAIL_ID));
-        onView(withId(R.id.et_password))
-                .perform(typeText(VALID_PASSWORD), closeSoftKeyboard());
-        onView(withId(R.id.login_btn)).perform(click());
-
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText(R.string.invalid_email_password_message)));
-    }
-
-    @Test
-    public void assert_show_snack_bar_invalid_email_or_password_message_when_login_pressed_with_valid_email_invalid_password() {
-        onView(withId(R.id.et_email))
-                .perform(typeText(VALID_EMAIL_ID));
-        onView(withId(R.id.et_password))
-                .perform(typeText(INVALID_PASSWORD), closeSoftKeyboard());
-        onView(withId(R.id.login_btn)).perform(click());
-
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText(R.string.invalid_email_password_message)));
+                .check(matches(withText(R.string.empty_password_message)));
     }
 
     @Test

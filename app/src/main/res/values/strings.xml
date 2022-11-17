@@ -4,7 +4,8 @@
     <string name="email_label">Email Address</string>
     <string name="password_label">Password</string>
     <string name="login">Login</string>
-    <string name="invalid_email_password_message">Invalid email or password!</string>
+    <string name="invalid_password_message">Invalid password!</string>
+    <string name="enter_valid_email_message">Enter valid email!</string>
     <string name="login_success_message">Login Successful!!\nCheck your credentials.</string>
-    <string name="empty_credentials_message">Please enter valid email and password!</string>
+    <string name="empty_password_message">Please enter password!</string>
 </resources>

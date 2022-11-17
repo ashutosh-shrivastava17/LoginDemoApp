@@ -2,6 +2,8 @@ package com.example.logindemoapp.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +22,33 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
+    private Button mLoginButton;
+
+    /**
+     * Text-watcher for email-address field.
+     */
+    private final TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String emailInput = mEmailEditText.getText().toString();
+            if (!ValidatorUtil.isEmailValid(emailInput)) {
+                mEmailEditText.setError(getString(R.string.enter_valid_email_message));
+                disableLoginButton(true);
+            } else {
+                disableLoginButton(false);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +63,14 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         mEmailEditText = findViewById(R.id.et_email);
         mPasswordEditText = findViewById(R.id.et_password);
-        Button loginButton = findViewById(R.id.login_btn);
-        loginButton.setOnClickListener(this::handleLoginButtonClick);
+        mLoginButton = findViewById(R.id.login_btn);
+        mLoginButton.setOnClickListener(this::handleLoginButtonClick);
+        //Setting login button disables initially.
+        disableLoginButton(true);
+        // Setting listener only to email field and not to password field.
+        // As for login purpose, providing hint related to password to user
+        // can be a breach to security.
+        mEmailEditText.addTextChangedListener(textWatcher);
     }
 
     /**
@@ -46,14 +81,10 @@ public class MainActivity extends AppCompatActivity {
     private void handleLoginButtonClick(View view) {
         String email = mEmailEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
-        // TODO We can add text-watcher for email field if we need to observe user input character
-        //  wise and show/hide errors accordingly.
-        if (ValidatorUtil.isEmailPasswordEmpty(email, password)) {
-            showSnackBar(view, getString(R.string.empty_credentials_message));
-        } else if (!ValidatorUtil.isEmailValid(email)) {
-            showSnackBar(view, getString(R.string.invalid_email_password_message));
+        if (ValidatorUtil.isPasswordEmpty(password)) {
+            showSnackBar(view, getString(R.string.empty_password_message));
         } else if (!ValidatorUtil.isPasswordValid(password)) {
-            showSnackBar(view, getString(R.string.invalid_email_password_message));
+            showSnackBar(view, getString(R.string.invalid_password_message));
         } else {
             navigateToNextPage(email, password);
         }
@@ -80,5 +111,22 @@ public class MainActivity extends AppCompatActivity {
     private void showSnackBar(View view, String message) {
         Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
         snackbar.show();
+    }
+
+    /**
+     * Enable/disable the login button and set colors accordingly.
+     *
+     * @param shouldDisableButton flag to check if button is to be disabled.
+     */
+    private void disableLoginButton(boolean shouldDisableButton) {
+        if (shouldDisableButton) {
+            mLoginButton.setEnabled(false);
+            mLoginButton.setAlpha(.5f);
+            mLoginButton.setTextColor(getColor(R.color.text_color_grey));
+        } else {
+            mLoginButton.setEnabled(true);
+            mLoginButton.setAlpha(1f);
+            mLoginButton.setTextColor(getColor(R.color.white));
+        }
     }
 }

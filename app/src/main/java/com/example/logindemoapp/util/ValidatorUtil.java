@@ -8,15 +8,11 @@ public class ValidatorUtil {
     /**
      * Checks if both email and password are empty.
      *
-     * @param email    entered email.
      * @param password entered password.
      * @return true if both are empty, otherwise false.
      */
-    public static boolean isEmailPasswordEmpty(String email, String password) {
-        if (email != null && password != null) {
-            return email.isEmpty() && password.isEmpty();
-        }
-        return true;
+    public static boolean isPasswordEmpty(String password) {
+        return password.isEmpty();
     }
 
     /**

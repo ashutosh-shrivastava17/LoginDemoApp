@@ -11,38 +11,13 @@ import org.junit.Test;
 public class ValidatorUtilTest {
 
     @Test
-    public void validate_null_email_and_password_isEmailPasswordEmpty_returns_true() {
-        assertTrue(ValidatorUtil.isEmailPasswordEmpty(null, null));
+    public void validate_empty_password_isPasswordEmpty_returns_true() {
+        assertTrue(ValidatorUtil.isPasswordEmpty(""));
     }
 
     @Test
-    public void validate_null_email_and_not_null_password_isEmailPasswordEmpty_returns_true() {
-        assertTrue(ValidatorUtil.isEmailPasswordEmpty(null, "Test@123"));
-    }
-
-    @Test
-    public void validate_not_null_email_and_null_password_isEmailPasswordEmpty_returns_true() {
-        assertTrue(ValidatorUtil.isEmailPasswordEmpty("abc1@xyz.com", null));
-    }
-
-    @Test
-    public void validate_empty_email_and_empty_password_isEmailPasswordEmpty_returns_true() {
-        assertTrue(ValidatorUtil.isEmailPasswordEmpty("", ""));
-    }
-
-    @Test
-    public void validate_empty_email_and_non_empty_password_isEmailPasswordEmpty_returns_false() {
-        assertFalse(ValidatorUtil.isEmailPasswordEmpty("", "Test@123"));
-    }
-
-    @Test
-    public void validate_non_empty_email_and_empty_password_isEmailPasswordEmpty_returns_false() {
-        assertFalse(ValidatorUtil.isEmailPasswordEmpty("abc1@xyz.com", ""));
-    }
-
-    @Test
-    public void validate_non_empty_email_and_non_empty_password_isEmailPasswordEmpty_returns_false() {
-        assertFalse(ValidatorUtil.isEmailPasswordEmpty("abc1@xyz.com", "Test@123"));
+    public void validate_non_empty_password_isPasswordEmpty_returns_false() {
+        assertFalse(ValidatorUtil.isPasswordEmpty("Test@123"));
     }
 
     @Test
